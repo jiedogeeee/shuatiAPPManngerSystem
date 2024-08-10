@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doge.mappers.AppExamQuestionMapper">
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.doge.entity.po.AppExamQuestion">
+	<!--自增ID-->
+	<id column="id" property="id" />
+	<!--考试ID-->
+	<result column="exam_id" property="examId" />
+	<!--用户ID-->
+	<result column="user_id" property="userId" />
+	<!--问题ID-->
+	<result column="question_id" property="questionId" />
+	<!--用户答案-->
+	<result column="user_answer" property="userAnswer" />
+	<!--0:未作答 1:正确  2:错误-->
+	<result column="answer_result" property="answerResult" />
+	</resultMap>
+	<!--通用查询结果列-->
+	<sql id="base_column_list">
+			id,exam_id,user_id,question_id,user_answer,answer_result
+	</sql>
+	<!--通用查询结果列-->
+	<sql id="base_query_condition">
+
+		<if test="query.id!=null">
+			and id = #{query.id}
+		</if>
+		<if test="query.examId!=null">
+			and exam_id = #{query.examId}
+		</if>
+		<if test="query.userId!=null and query.userId!=''">
+			and user_id = #{query.userId}
+		</if>
+		<if test="query.questionId!=null">
+			and question_id = #{query.questionId}
+		</if>
+		<if test="query.userAnswer!=null and query.userAnswer!=''">
+			and user_answer = #{query.userAnswer}
+		</if>
+		<if test="query.answerResult!=null">
+			and answer_result = #{query.answerResult}
+		</if>	</sql>
+	<!--扩展查询条件-->
+	<sql id="base_query_condition_extends">
+
+		<if test="query.userIdFuzzy!=null and query.userIdFuzzy!='' ">
+			and user_id like concat('%', #{query.userIdFuzzy}, '%')
+		</if>
+
+		<if test="query.userAnswerFuzzy!=null and query.userAnswerFuzzy!='' ">
+			and user_answer like concat('%', #{query.userAnswerFuzzy}, '%')
+		</if>
+	</sql>
+	<!--通用查询条件-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_query_condition"/>
+			<include refid="base_query_condition_extends"/>
+		</where>
+	</sql>
+	<!--查询列表-->
+	<select id = "selectList" resultMap="base_result_map">
+		SELECT
+		<include refid="base_column_list"/>
+		FROM app_exam_question
+		<include refid="query_condition"/>
+		<if test="query.orderBy!=null">order by ${query.orderBy}</if>
+		<if test="query.simplePage!=null">limit  #{query.simplePage.start},#{query.simplePage.end}</if>
+	</select>
+	<!--查询数量-->
+		<select id ="selectCount" resultType="java.lang.Integer">
+			SELECT count(1) FROM  app_exam_question
+		<include refid="query_condition"/>
+		</select>
+	<!--插入（匹配有值的字段）-->
+		<insert id ="insert" parameterType="com.doge.entity.po.AppExamQuestion">
+			<selectKey keyProperty="bean.id" resultType = "Integer" order="AFTER">
+				SELECT LAST_INSERT_ID()
+			</selectKey>
+				INSERT INTO  app_exam_question
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.id!=null"> 
+				id,
+			</if>
+			<if test= "bean.examId!=null"> 
+				exam_id,
+			</if>
+			<if test= "bean.userId!=null"> 
+				user_id,
+			</if>
+			<if test= "bean.questionId!=null"> 
+				question_id,
+			</if>
+			<if test= "bean.userAnswer!=null"> 
+				user_answer,
+			</if>
+			<if test= "bean.answerResult!=null"> 
+				answer_result,
+			</if>
+		</trim>
+
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.id!=null"> 
+				#{bean.id},
+			</if>
+			<if test= "bean.examId!=null"> 
+				#{bean.examId},
+			</if>
+			<if test= "bean.userId!=null"> 
+				#{bean.userId},
+			</if>
+			<if test= "bean.questionId!=null"> 
+				#{bean.questionId},
+			</if>
+			<if test= "bean.userAnswer!=null"> 
+				#{bean.userAnswer},
+			</if>
+			<if test= "bean.answerResult!=null"> 
+				#{bean.answerResult},
+			</if>
+		</trim>
+		</insert>
+	<!--插入或者更新（匹配有值的字段）-->
+		<insert id ="insertOrUpdate" parameterType="com.doge.entity.po.AppExamQuestion">
+				INSERT INTO  app_exam_question
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.id!=null"> 
+				id,
+			</if>
+			<if test= "bean.examId!=null"> 
+				exam_id,
+			</if>
+			<if test= "bean.userId!=null"> 
+				user_id,
+			</if>
+			<if test= "bean.questionId!=null"> 
+				question_id,
+			</if>
+			<if test= "bean.userAnswer!=null"> 
+				user_answer,
+			</if>
+			<if test= "bean.answerResult!=null"> 
+				answer_result,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.id!=null"> 
+				#{bean.id},
+			</if>
+			<if test= "bean.examId!=null"> 
+				#{bean.examId},
+			</if>
+			<if test= "bean.userId!=null"> 
+				#{bean.userId},
+			</if>
+			<if test= "bean.questionId!=null"> 
+				#{bean.questionId},
+			</if>
+			<if test= "bean.userAnswer!=null"> 
+				#{bean.userAnswer},
+			</if>
+			<if test= "bean.answerResult!=null"> 
+				#{bean.answerResult},
+			</if>
+		</trim>
+			on DUPLICATE key update
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test= "bean.userAnswer!=null"> 
+				user_answer = VALUES(user_answer),
+			</if>
+			<if test= "bean.answerResult!=null"> 
+				answer_result = VALUES(answer_result),
+			</if>
+		</trim>
+		</insert>
+	<!--批量插入-->
+		<insert id ="insertBatch" parameterType="com.doge.entity.po.AppExamQuestion">
+			INSERT INTO app_exam_question(exam_id,user_id,question_id,user_answer,answer_result)values
+			<foreach collection="list" item="item" separator=",">
+			(#{item.examId},#{item.userId},#{item.questionId},#{item.userAnswer},#{item.answerResult})
+			</foreach>
+		</insert>
+
+	<!--批量插入或更新-->
+		<insert id ="insertOrUpdateBatch" parameterType="com.doge.entity.po.AppExamQuestion">
+			INSERT INTO app_exam_question(exam_id,user_id,question_id,user_answer,answer_result)values
+			<foreach collection="list" item="item" separator="," >
+			(#{item.examId},#{item.userId},#{item.questionId},#{item.userAnswer},#{item.answerResult})
+			</foreach>
+			on DUPLICATE key update
+			exam_id = VALUES(exam_id),
+			user_id = VALUES(user_id),
+			question_id = VALUES(question_id),
+			user_answer = VALUES(user_answer),
+			answer_result = VALUES(answer_result)
+
+		</insert>
+
+	<!--根据Id查询-->
+	<select id = "selectById" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_exam_question  where id=#{id}
+	</select>
+	<!--根据Id更新-->
+	<update id ="updateById" parameterType="com.doge.entity.po.AppExamQuestion">
+		UPDATE app_exam_question
+	<set>
+		<if test= "bean.examId!=null"> 
+				exam_id = #{bean.examId},
+		</if>
+		<if test= "bean.userId!=null"> 
+				user_id = #{bean.userId},
+		</if>
+		<if test= "bean.questionId!=null"> 
+				question_id = #{bean.questionId},
+		</if>
+		<if test= "bean.userAnswer!=null"> 
+				user_answer = #{bean.userAnswer},
+		</if>
+		<if test= "bean.answerResult!=null"> 
+				answer_result = #{bean.answerResult},
+		</if>
+	</set>
+			where id=#{id}
+	</update>
+
+	<!--根据Id删除-->
+	<delete id ="deleteById">
+		delete from app_exam_question where id=#{id}
+	</delete>
+
+
+	<!--根据ExamId And UserId And QuestionId查询-->
+	<select id = "selectByExamId And UserId And QuestionId" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_exam_question  where exam_id=#{examId} and user_id=#{userId} and question_id=#{questionId}
+	</select>
+	<!--根据ExamId And UserId And QuestionId更新-->
+	<update id ="updateByExamId And UserId And QuestionId" parameterType="com.doge.entity.po.AppExamQuestion">
+		UPDATE app_exam_question
+	<set>
+		<if test= "bean.examId!=null"> 
+				exam_id = #{bean.examId},
+		</if>
+		<if test= "bean.userId!=null"> 
+				user_id = #{bean.userId},
+		</if>
+		<if test= "bean.questionId!=null"> 
+				question_id = #{bean.questionId},
+		</if>
+		<if test= "bean.userAnswer!=null"> 
+				user_answer = #{bean.userAnswer},
+		</if>
+		<if test= "bean.answerResult!=null"> 
+				answer_result = #{bean.answerResult},
+		</if>
+	</set>
+			where exam_id=#{examId} and user_id=#{userId} and question_id=#{questionId}
+	</update>
+
+	<!--根据ExamId And UserId And QuestionId删除-->
+	<delete id ="deleteByExamId And UserId And QuestionId">
+		delete from app_exam_question where exam_id=#{examId} and user_id=#{userId} and question_id=#{questionId}
+	</delete>
+
+
+</mapper>

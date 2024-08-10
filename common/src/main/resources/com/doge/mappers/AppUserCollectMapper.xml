@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doge.mappers.AppUserCollectMapper">
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.doge.entity.po.AppUserCollect">
+	<!--收藏ID-->
+	<id column="collect_id" property="collectId" />
+	<!--用户ID-->
+	<result column="user_id" property="userId" />
+	<!--主体ID 问题ID,考题ID,分享文章ID-->
+	<result column="object_id" property="objectId" />
+	<!--0:分享收藏 1:问题收藏  2:考题收藏-->
+	<result column="collect_type" property="collectType" />
+	<!--收藏时间-->
+	<result column="collect_time" property="collectTime" />
+	</resultMap>
+	<!--通用查询结果列-->
+	<sql id="base_column_list">
+			collect_id,user_id,object_id,collect_type,collect_time
+	</sql>
+	<!--通用查询结果列-->
+	<sql id="base_query_condition">
+
+		<if test="query.collectId!=null">
+			and collect_id = #{query.collectId}
+		</if>
+		<if test="query.userId!=null and query.userId!=''">
+			and user_id = #{query.userId}
+		</if>
+		<if test="query.objectId!=null and query.objectId!=''">
+			and object_id = #{query.objectId}
+		</if>
+		<if test="query.collectType!=null">
+			and collect_type = #{query.collectType}
+		</if>
+		<if test="query.collectTime!=null">
+			and collect_time = #{query.collectTime}
+		</if>	</sql>
+	<!--扩展查询条件-->
+	<sql id="base_query_condition_extends">
+
+		<if test="query.userIdFuzzy!=null and query.userIdFuzzy!='' ">
+			and user_id like concat('%', #{query.userIdFuzzy}, '%')
+		</if>
+
+		<if test="query.objectIdFuzzy!=null and query.objectIdFuzzy!='' ">
+			and object_id like concat('%', #{query.objectIdFuzzy}, '%')
+		</if>
+
+		<if test="query.collectTimeStart!=null and query.collectTimeStart!='' ">
+			<![CDATA[ and collect_time >= str_to_date(#{query.collectTimeStart}, '%Y-%m-%d %H:%i:%s')]]>
+		</if>
+
+		<if test="query.collectTimeEnd!=null and query.collectTimeEnd!='' ">
+			<![CDATA[ and collect_time < date_sub(str_to_date(#{query.collectTimeEnd}, '%Y-%m-%d %H:%i:%s',interval-1 day))]]>
+		</if>
+	</sql>
+	<!--通用查询条件-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_query_condition"/>
+			<include refid="base_query_condition_extends"/>
+		</where>
+	</sql>
+	<!--查询列表-->
+	<select id = "selectList" resultMap="base_result_map">
+		SELECT
+		<include refid="base_column_list"/>
+		FROM app_user_collect
+		<include refid="query_condition"/>
+		<if test="query.orderBy!=null">order by ${query.orderBy}</if>
+		<if test="query.simplePage!=null">limit  #{query.simplePage.start},#{query.simplePage.end}</if>
+	</select>
+	<!--查询数量-->
+		<select id ="selectCount" resultType="java.lang.Integer">
+			SELECT count(1) FROM  app_user_collect
+		<include refid="query_condition"/>
+		</select>
+	<!--插入（匹配有值的字段）-->
+		<insert id ="insert" parameterType="com.doge.entity.po.AppUserCollect">
+			<selectKey keyProperty="bean.collectId" resultType = "Integer" order="AFTER">
+				SELECT LAST_INSERT_ID()
+			</selectKey>
+				INSERT INTO  app_user_collect
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.collectId!=null"> 
+				collect_id,
+			</if>
+			<if test= "bean.userId!=null"> 
+				user_id,
+			</if>
+			<if test= "bean.objectId!=null"> 
+				object_id,
+			</if>
+			<if test= "bean.collectType!=null"> 
+				collect_type,
+			</if>
+			<if test= "bean.collectTime!=null"> 
+				collect_time,
+			</if>
+		</trim>
+
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.collectId!=null"> 
+				#{bean.collectId},
+			</if>
+			<if test= "bean.userId!=null"> 
+				#{bean.userId},
+			</if>
+			<if test= "bean.objectId!=null"> 
+				#{bean.objectId},
+			</if>
+			<if test= "bean.collectType!=null"> 
+				#{bean.collectType},
+			</if>
+			<if test= "bean.collectTime!=null"> 
+				#{bean.collectTime},
+			</if>
+		</trim>
+		</insert>
+	<!--插入或者更新（匹配有值的字段）-->
+		<insert id ="insertOrUpdate" parameterType="com.doge.entity.po.AppUserCollect">
+				INSERT INTO  app_user_collect
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.collectId!=null"> 
+				collect_id,
+			</if>
+			<if test= "bean.userId!=null"> 
+				user_id,
+			</if>
+			<if test= "bean.objectId!=null"> 
+				object_id,
+			</if>
+			<if test= "bean.collectType!=null"> 
+				collect_type,
+			</if>
+			<if test= "bean.collectTime!=null"> 
+				collect_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.collectId!=null"> 
+				#{bean.collectId},
+			</if>
+			<if test= "bean.userId!=null"> 
+				#{bean.userId},
+			</if>
+			<if test= "bean.objectId!=null"> 
+				#{bean.objectId},
+			</if>
+			<if test= "bean.collectType!=null"> 
+				#{bean.collectType},
+			</if>
+			<if test= "bean.collectTime!=null"> 
+				#{bean.collectTime},
+			</if>
+		</trim>
+			on DUPLICATE key update
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test= "bean.collectTime!=null"> 
+				collect_time = VALUES(collect_time),
+			</if>
+		</trim>
+		</insert>
+	<!--批量插入-->
+		<insert id ="insertBatch" parameterType="com.doge.entity.po.AppUserCollect">
+			INSERT INTO app_user_collect(user_id,object_id,collect_type,collect_time)values
+			<foreach collection="list" item="item" separator=",">
+			(#{item.userId},#{item.objectId},#{item.collectType},#{item.collectTime})
+			</foreach>
+		</insert>
+
+	<!--批量插入或更新-->
+		<insert id ="insertOrUpdateBatch" parameterType="com.doge.entity.po.AppUserCollect">
+			INSERT INTO app_user_collect(user_id,object_id,collect_type,collect_time)values
+			<foreach collection="list" item="item" separator="," >
+			(#{item.userId},#{item.objectId},#{item.collectType},#{item.collectTime})
+			</foreach>
+			on DUPLICATE key update
+			user_id = VALUES(user_id),
+			object_id = VALUES(object_id),
+			collect_type = VALUES(collect_type),
+			collect_time = VALUES(collect_time)
+
+		</insert>
+
+	<!--根据CollectId查询-->
+	<select id = "selectByCollectId" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_user_collect  where collect_id=#{collectId}
+	</select>
+	<!--根据CollectId更新-->
+	<update id ="updateByCollectId" parameterType="com.doge.entity.po.AppUserCollect">
+		UPDATE app_user_collect
+	<set>
+		<if test= "bean.userId!=null"> 
+				user_id = #{bean.userId},
+		</if>
+		<if test= "bean.objectId!=null"> 
+				object_id = #{bean.objectId},
+		</if>
+		<if test= "bean.collectType!=null"> 
+				collect_type = #{bean.collectType},
+		</if>
+		<if test= "bean.collectTime!=null"> 
+				collect_time = #{bean.collectTime},
+		</if>
+	</set>
+			where collect_id=#{collectId}
+	</update>
+
+	<!--根据CollectId删除-->
+	<delete id ="deleteByCollectId">
+		delete from app_user_collect where collect_id=#{collectId}
+	</delete>
+
+
+	<!--根据UserId And ObjectId And CollectType查询-->
+	<select id = "selectByUserId And ObjectId And CollectType" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_user_collect  where user_id=#{userId} and object_id=#{objectId} and collect_type=#{collectType}
+	</select>
+	<!--根据UserId And ObjectId And CollectType更新-->
+	<update id ="updateByUserId And ObjectId And CollectType" parameterType="com.doge.entity.po.AppUserCollect">
+		UPDATE app_user_collect
+	<set>
+		<if test= "bean.userId!=null"> 
+				user_id = #{bean.userId},
+		</if>
+		<if test= "bean.objectId!=null"> 
+				object_id = #{bean.objectId},
+		</if>
+		<if test= "bean.collectType!=null"> 
+				collect_type = #{bean.collectType},
+		</if>
+		<if test= "bean.collectTime!=null"> 
+				collect_time = #{bean.collectTime},
+		</if>
+	</set>
+			where user_id=#{userId} and object_id=#{objectId} and collect_type=#{collectType}
+	</update>
+
+	<!--根据UserId And ObjectId And CollectType删除-->
+	<delete id ="deleteByUserId And ObjectId And CollectType">
+		delete from app_user_collect where user_id=#{userId} and object_id=#{objectId} and collect_type=#{collectType}
+	</delete>
+
+
+</mapper>

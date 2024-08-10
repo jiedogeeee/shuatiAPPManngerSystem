@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doge.mappers.AppDeviceMapper">
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.doge.entity.po.AppDevice">
+	<!--设备ID-->
+	<id column="device_id" property="deviceId" />
+	<!--手机品牌-->
+	<result column="device_brand" property="deviceBrand" />
+	<!--创建时间-->
+	<result column="create_time" property="createTime" />
+	<!--最后使用时间-->
+	<result column="last_use_time" property="lastUseTime" />
+	<!--ip-->
+	<result column="ip" property="ip" />
+	</resultMap>
+	<!--通用查询结果列-->
+	<sql id="base_column_list">
+			device_id,device_brand,create_time,last_use_time,ip
+	</sql>
+	<!--通用查询结果列-->
+	<sql id="base_query_condition">
+
+		<if test="query.deviceId!=null and query.deviceId!=''">
+			and device_id = #{query.deviceId}
+		</if>
+		<if test="query.deviceBrand!=null and query.deviceBrand!=''">
+			and device_brand = #{query.deviceBrand}
+		</if>
+		<if test="query.createTime!=null">
+			and create_time = #{query.createTime}
+		</if>
+		<if test="query.lastUseTime!=null">
+			and last_use_time = #{query.lastUseTime}
+		</if>
+		<if test="query.ip!=null and query.ip!=''">
+			and ip = #{query.ip}
+		</if>	</sql>
+	<!--扩展查询条件-->
+	<sql id="base_query_condition_extends">
+
+		<if test="query.deviceIdFuzzy!=null and query.deviceIdFuzzy!='' ">
+			and device_id like concat('%', #{query.deviceIdFuzzy}, '%')
+		</if>
+
+		<if test="query.deviceBrandFuzzy!=null and query.deviceBrandFuzzy!='' ">
+			and device_brand like concat('%', #{query.deviceBrandFuzzy}, '%')
+		</if>
+
+		<if test="query.createTimeStart!=null and query.createTimeStart!='' ">
+			<![CDATA[ and create_time >= str_to_date(#{query.createTimeStart}, '%Y-%m-%d %H:%i:%s')]]>
+		</if>
+
+		<if test="query.createTimeEnd!=null and query.createTimeEnd!='' ">
+			<![CDATA[ and create_time < date_sub(str_to_date(#{query.createTimeEnd}, '%Y-%m-%d %H:%i:%s',interval-1 day))]]>
+		</if>
+
+		<if test="query.lastUseTimeStart!=null and query.lastUseTimeStart!='' ">
+			<![CDATA[ and last_use_time >= str_to_date(#{query.lastUseTimeStart}, '%Y-%m-%d %H:%i:%s')]]>
+		</if>
+
+		<if test="query.lastUseTimeEnd!=null and query.lastUseTimeEnd!='' ">
+			<![CDATA[ and last_use_time < date_sub(str_to_date(#{query.lastUseTimeEnd}, '%Y-%m-%d %H:%i:%s',interval-1 day))]]>
+		</if>
+
+		<if test="query.ipFuzzy!=null and query.ipFuzzy!='' ">
+			and ip like concat('%', #{query.ipFuzzy}, '%')
+		</if>
+	</sql>
+	<!--通用查询条件-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_query_condition"/>
+			<include refid="base_query_condition_extends"/>
+		</where>
+	</sql>
+	<!--查询列表-->
+	<select id = "selectList" resultMap="base_result_map">
+		SELECT
+		<include refid="base_column_list"/>
+		FROM app_device
+		<include refid="query_condition"/>
+		<if test="query.orderBy!=null">order by ${query.orderBy}</if>
+		<if test="query.simplePage!=null">limit  #{query.simplePage.start},#{query.simplePage.end}</if>
+	</select>
+	<!--查询数量-->
+		<select id ="selectCount" resultType="java.lang.Integer">
+			SELECT count(1) FROM  app_device
+		<include refid="query_condition"/>
+		</select>
+	<!--插入（匹配有值的字段）-->
+		<insert id ="insert" parameterType="com.doge.entity.po.AppDevice">
+				INSERT INTO  app_device
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.deviceId!=null"> 
+				device_id,
+			</if>
+			<if test= "bean.deviceBrand!=null"> 
+				device_brand,
+			</if>
+			<if test= "bean.createTime!=null"> 
+				create_time,
+			</if>
+			<if test= "bean.lastUseTime!=null"> 
+				last_use_time,
+			</if>
+			<if test= "bean.ip!=null"> 
+				ip,
+			</if>
+		</trim>
+
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.deviceId!=null"> 
+				#{bean.deviceId},
+			</if>
+			<if test= "bean.deviceBrand!=null"> 
+				#{bean.deviceBrand},
+			</if>
+			<if test= "bean.createTime!=null"> 
+				#{bean.createTime},
+			</if>
+			<if test= "bean.lastUseTime!=null"> 
+				#{bean.lastUseTime},
+			</if>
+			<if test= "bean.ip!=null"> 
+				#{bean.ip},
+			</if>
+		</trim>
+		</insert>
+	<!--插入或者更新（匹配有值的字段）-->
+		<insert id ="insertOrUpdate" parameterType="com.doge.entity.po.AppDevice">
+				INSERT INTO  app_device
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.deviceId!=null"> 
+				device_id,
+			</if>
+			<if test= "bean.deviceBrand!=null"> 
+				device_brand,
+			</if>
+			<if test= "bean.createTime!=null"> 
+				create_time,
+			</if>
+			<if test= "bean.lastUseTime!=null"> 
+				last_use_time,
+			</if>
+			<if test= "bean.ip!=null"> 
+				ip,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.deviceId!=null"> 
+				#{bean.deviceId},
+			</if>
+			<if test= "bean.deviceBrand!=null"> 
+				#{bean.deviceBrand},
+			</if>
+			<if test= "bean.createTime!=null"> 
+				#{bean.createTime},
+			</if>
+			<if test= "bean.lastUseTime!=null"> 
+				#{bean.lastUseTime},
+			</if>
+			<if test= "bean.ip!=null"> 
+				#{bean.ip},
+			</if>
+		</trim>
+			on DUPLICATE key update
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test= "bean.deviceBrand!=null"> 
+				device_brand = VALUES(device_brand),
+			</if>
+			<if test= "bean.createTime!=null"> 
+				create_time = VALUES(create_time),
+			</if>
+			<if test= "bean.lastUseTime!=null"> 
+				last_use_time = VALUES(last_use_time),
+			</if>
+			<if test= "bean.ip!=null"> 
+				ip = VALUES(ip),
+			</if>
+		</trim>
+		</insert>
+	<!--批量插入-->
+		<insert id ="insertBatch" parameterType="com.doge.entity.po.AppDevice">
+			INSERT INTO app_device(device_id,device_brand,create_time,last_use_time,ip)values
+			<foreach collection="list" item="item" separator=",">
+			(#{item.deviceId},#{item.deviceBrand},#{item.createTime},#{item.lastUseTime},#{item.ip})
+			</foreach>
+		</insert>
+
+	<!--批量插入或更新-->
+		<insert id ="insertOrUpdateBatch" parameterType="com.doge.entity.po.AppDevice">
+			INSERT INTO app_device(device_id,device_brand,create_time,last_use_time,ip)values
+			<foreach collection="list" item="item" separator="," >
+			(#{item.deviceId},#{item.deviceBrand},#{item.createTime},#{item.lastUseTime},#{item.ip})
+			</foreach>
+			on DUPLICATE key update
+			device_id = VALUES(device_id),
+			device_brand = VALUES(device_brand),
+			create_time = VALUES(create_time),
+			last_use_time = VALUES(last_use_time),
+			ip = VALUES(ip)
+
+		</insert>
+
+	<!--根据DeviceId查询-->
+	<select id = "selectByDeviceId" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_device  where device_id=#{deviceId}
+	</select>
+	<!--根据DeviceId更新-->
+	<update id ="updateByDeviceId" parameterType="com.doge.entity.po.AppDevice">
+		UPDATE app_device
+	<set>
+		<if test= "bean.deviceId!=null"> 
+				device_id = #{bean.deviceId},
+		</if>
+		<if test= "bean.deviceBrand!=null"> 
+				device_brand = #{bean.deviceBrand},
+		</if>
+		<if test= "bean.createTime!=null"> 
+				create_time = #{bean.createTime},
+		</if>
+		<if test= "bean.lastUseTime!=null"> 
+				last_use_time = #{bean.lastUseTime},
+		</if>
+		<if test= "bean.ip!=null"> 
+				ip = #{bean.ip},
+		</if>
+	</set>
+			where device_id=#{deviceId}
+	</update>
+
+	<!--根据DeviceId删除-->
+	<delete id ="deleteByDeviceId">
+		delete from app_device where device_id=#{deviceId}
+	</delete>
+
+
+</mapper>

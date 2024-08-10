@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doge.mappers.AppFeedbackMapper">
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.doge.entity.po.AppFeedback">
+	<!--自增ID-->
+	<id column="feedback_id" property="feedbackId" />
+	<!--用户ID-->
+	<result column="user_id" property="userId" />
+	<!--昵称-->
+	<result column="nick_name" property="nickName" />
+	<!--反馈内容-->
+	<result column="content" property="content" />
+	<!--创建时间-->
+	<result column="create_time" property="createTime" />
+	<!--父级ID-->
+	<result column="p_feedback_id" property="pFeedbackId" />
+	<!--状态0:未回复 1:已回复-->
+	<result column="status" property="status" />
+	<!--0:访客 1:管理员-->
+	<result column="send_type" property="sendType" />
+	<!--访客最后发送时间-->
+	<result column="client_last_send_time" property="clientLastSendTime" />
+	</resultMap>
+	<!--通用查询结果列-->
+	<sql id="base_column_list">
+			feedback_id,user_id,nick_name,content,create_time,p_feedback_id,status,send_type,client_last_send_time
+	</sql>
+	<!--通用查询结果列-->
+	<sql id="base_query_condition">
+
+		<if test="query.feedbackId!=null">
+			and feedback_id = #{query.feedbackId}
+		</if>
+		<if test="query.userId!=null and query.userId!=''">
+			and user_id = #{query.userId}
+		</if>
+		<if test="query.nickName!=null and query.nickName!=''">
+			and nick_name = #{query.nickName}
+		</if>
+		<if test="query.content!=null and query.content!=''">
+			and content = #{query.content}
+		</if>
+		<if test="query.createTime!=null">
+			and create_time = #{query.createTime}
+		</if>
+		<if test="query.pFeedbackId!=null">
+			and p_feedback_id = #{query.pFeedbackId}
+		</if>
+		<if test="query.status!=null">
+			and status = #{query.status}
+		</if>
+		<if test="query.sendType!=null">
+			and send_type = #{query.sendType}
+		</if>
+		<if test="query.clientLastSendTime!=null">
+			and client_last_send_time = #{query.clientLastSendTime}
+		</if>	</sql>
+	<!--扩展查询条件-->
+	<sql id="base_query_condition_extends">
+
+		<if test="query.userIdFuzzy!=null and query.userIdFuzzy!='' ">
+			and user_id like concat('%', #{query.userIdFuzzy}, '%')
+		</if>
+
+		<if test="query.nickNameFuzzy!=null and query.nickNameFuzzy!='' ">
+			and nick_name like concat('%', #{query.nickNameFuzzy}, '%')
+		</if>
+
+		<if test="query.contentFuzzy!=null and query.contentFuzzy!='' ">
+			and content like concat('%', #{query.contentFuzzy}, '%')
+		</if>
+
+		<if test="query.createTimeStart!=null and query.createTimeStart!='' ">
+			<![CDATA[ and create_time >= str_to_date(#{query.createTimeStart}, '%Y-%m-%d %H:%i:%s')]]>
+		</if>
+
+		<if test="query.createTimeEnd!=null and query.createTimeEnd!='' ">
+			<![CDATA[ and create_time < date_sub(str_to_date(#{query.createTimeEnd}, '%Y-%m-%d %H:%i:%s',interval-1 day))]]>
+		</if>
+
+		<if test="query.clientLastSendTimeStart!=null and query.clientLastSendTimeStart!='' ">
+			<![CDATA[ and client_last_send_time >= str_to_date(#{query.clientLastSendTimeStart}, '%Y-%m-%d %H:%i:%s')]]>
+		</if>
+
+		<if test="query.clientLastSendTimeEnd!=null and query.clientLastSendTimeEnd!='' ">
+			<![CDATA[ and client_last_send_time < date_sub(str_to_date(#{query.clientLastSendTimeEnd}, '%Y-%m-%d %H:%i:%s',interval-1 day))]]>
+		</if>
+	</sql>
+	<!--通用查询条件-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_query_condition"/>
+			<include refid="base_query_condition_extends"/>
+		</where>
+	</sql>
+	<!--查询列表-->
+	<select id = "selectList" resultMap="base_result_map">
+		SELECT
+		<include refid="base_column_list"/>
+		FROM app_feedback
+		<include refid="query_condition"/>
+		<if test="query.orderBy!=null">order by ${query.orderBy}</if>
+		<if test="query.simplePage!=null">limit  #{query.simplePage.start},#{query.simplePage.end}</if>
+	</select>
+	<!--查询数量-->
+		<select id ="selectCount" resultType="java.lang.Integer">
+			SELECT count(1) FROM  app_feedback
+		<include refid="query_condition"/>
+		</select>
+	<!--插入（匹配有值的字段）-->
+		<insert id ="insert" parameterType="com.doge.entity.po.AppFeedback">
+			<selectKey keyProperty="bean.feedbackId" resultType = "Integer" order="AFTER">
+				SELECT LAST_INSERT_ID()
+			</selectKey>
+				INSERT INTO  app_feedback
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.feedbackId!=null"> 
+				feedback_id,
+			</if>
+			<if test= "bean.userId!=null"> 
+				user_id,
+			</if>
+			<if test= "bean.nickName!=null"> 
+				nick_name,
+			</if>
+			<if test= "bean.content!=null"> 
+				content,
+			</if>
+			<if test= "bean.createTime!=null"> 
+				create_time,
+			</if>
+			<if test= "bean.pFeedbackId!=null"> 
+				p_feedback_id,
+			</if>
+			<if test= "bean.status!=null"> 
+				status,
+			</if>
+			<if test= "bean.sendType!=null"> 
+				send_type,
+			</if>
+			<if test= "bean.clientLastSendTime!=null"> 
+				client_last_send_time,
+			</if>
+		</trim>
+
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.feedbackId!=null"> 
+				#{bean.feedbackId},
+			</if>
+			<if test= "bean.userId!=null"> 
+				#{bean.userId},
+			</if>
+			<if test= "bean.nickName!=null"> 
+				#{bean.nickName},
+			</if>
+			<if test= "bean.content!=null"> 
+				#{bean.content},
+			</if>
+			<if test= "bean.createTime!=null"> 
+				#{bean.createTime},
+			</if>
+			<if test= "bean.pFeedbackId!=null"> 
+				#{bean.pFeedbackId},
+			</if>
+			<if test= "bean.status!=null"> 
+				#{bean.status},
+			</if>
+			<if test= "bean.sendType!=null"> 
+				#{bean.sendType},
+			</if>
+			<if test= "bean.clientLastSendTime!=null"> 
+				#{bean.clientLastSendTime},
+			</if>
+		</trim>
+		</insert>
+	<!--插入或者更新（匹配有值的字段）-->
+		<insert id ="insertOrUpdate" parameterType="com.doge.entity.po.AppFeedback">
+				INSERT INTO  app_feedback
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.feedbackId!=null"> 
+				feedback_id,
+			</if>
+			<if test= "bean.userId!=null"> 
+				user_id,
+			</if>
+			<if test= "bean.nickName!=null"> 
+				nick_name,
+			</if>
+			<if test= "bean.content!=null"> 
+				content,
+			</if>
+			<if test= "bean.createTime!=null"> 
+				create_time,
+			</if>
+			<if test= "bean.pFeedbackId!=null"> 
+				p_feedback_id,
+			</if>
+			<if test= "bean.status!=null"> 
+				status,
+			</if>
+			<if test= "bean.sendType!=null"> 
+				send_type,
+			</if>
+			<if test= "bean.clientLastSendTime!=null"> 
+				client_last_send_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.feedbackId!=null"> 
+				#{bean.feedbackId},
+			</if>
+			<if test= "bean.userId!=null"> 
+				#{bean.userId},
+			</if>
+			<if test= "bean.nickName!=null"> 
+				#{bean.nickName},
+			</if>
+			<if test= "bean.content!=null"> 
+				#{bean.content},
+			</if>
+			<if test= "bean.createTime!=null"> 
+				#{bean.createTime},
+			</if>
+			<if test= "bean.pFeedbackId!=null"> 
+				#{bean.pFeedbackId},
+			</if>
+			<if test= "bean.status!=null"> 
+				#{bean.status},
+			</if>
+			<if test= "bean.sendType!=null"> 
+				#{bean.sendType},
+			</if>
+			<if test= "bean.clientLastSendTime!=null"> 
+				#{bean.clientLastSendTime},
+			</if>
+		</trim>
+			on DUPLICATE key update
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test= "bean.nickName!=null"> 
+				nick_name = VALUES(nick_name),
+			</if>
+			<if test= "bean.content!=null"> 
+				content = VALUES(content),
+			</if>
+			<if test= "bean.createTime!=null"> 
+				create_time = VALUES(create_time),
+			</if>
+			<if test= "bean.pFeedbackId!=null"> 
+				p_feedback_id = VALUES(p_feedback_id),
+			</if>
+			<if test= "bean.status!=null"> 
+				status = VALUES(status),
+			</if>
+			<if test= "bean.sendType!=null"> 
+				send_type = VALUES(send_type),
+			</if>
+			<if test= "bean.clientLastSendTime!=null"> 
+				client_last_send_time = VALUES(client_last_send_time),
+			</if>
+		</trim>
+		</insert>
+	<!--批量插入-->
+		<insert id ="insertBatch" parameterType="com.doge.entity.po.AppFeedback">
+			INSERT INTO app_feedback(user_id,nick_name,content,create_time,p_feedback_id,status,send_type,client_last_send_time)values
+			<foreach collection="list" item="item" separator=",">
+			(#{item.userId},#{item.nickName},#{item.content},#{item.createTime},#{item.pFeedbackId},#{item.status},#{item.sendType},#{item.clientLastSendTime})
+			</foreach>
+		</insert>
+
+	<!--批量插入或更新-->
+		<insert id ="insertOrUpdateBatch" parameterType="com.doge.entity.po.AppFeedback">
+			INSERT INTO app_feedback(user_id,nick_name,content,create_time,p_feedback_id,status,send_type,client_last_send_time)values
+			<foreach collection="list" item="item" separator="," >
+			(#{item.userId},#{item.nickName},#{item.content},#{item.createTime},#{item.pFeedbackId},#{item.status},#{item.sendType},#{item.clientLastSendTime})
+			</foreach>
+			on DUPLICATE key update
+			user_id = VALUES(user_id),
+			nick_name = VALUES(nick_name),
+			content = VALUES(content),
+			create_time = VALUES(create_time),
+			p_feedback_id = VALUES(p_feedback_id),
+			status = VALUES(status),
+			send_type = VALUES(send_type),
+			client_last_send_time = VALUES(client_last_send_time)
+
+		</insert>
+
+	<!--根据FeedbackId查询-->
+	<select id = "selectByFeedbackId" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_feedback  where feedback_id=#{feedbackId}
+	</select>
+	<!--根据FeedbackId更新-->
+	<update id ="updateByFeedbackId" parameterType="com.doge.entity.po.AppFeedback">
+		UPDATE app_feedback
+	<set>
+		<if test= "bean.userId!=null"> 
+				user_id = #{bean.userId},
+		</if>
+		<if test= "bean.nickName!=null"> 
+				nick_name = #{bean.nickName},
+		</if>
+		<if test= "bean.content!=null"> 
+				content = #{bean.content},
+		</if>
+		<if test= "bean.createTime!=null"> 
+				create_time = #{bean.createTime},
+		</if>
+		<if test= "bean.pFeedbackId!=null"> 
+				p_feedback_id = #{bean.pFeedbackId},
+		</if>
+		<if test= "bean.status!=null"> 
+				status = #{bean.status},
+		</if>
+		<if test= "bean.sendType!=null"> 
+				send_type = #{bean.sendType},
+		</if>
+		<if test= "bean.clientLastSendTime!=null"> 
+				client_last_send_time = #{bean.clientLastSendTime},
+		</if>
+	</set>
+			where feedback_id=#{feedbackId}
+	</update>
+
+	<!--根据FeedbackId删除-->
+	<delete id ="deleteByFeedbackId">
+		delete from app_feedback where feedback_id=#{feedbackId}
+	</delete>
+
+
+	<!--根据FeedbackId And UserId查询-->
+	<select id = "selectByFeedbackId And UserId" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_feedback  where feedback_id=#{feedbackId} and user_id=#{userId}
+	</select>
+	<!--根据FeedbackId And UserId更新-->
+	<update id ="updateByFeedbackId And UserId" parameterType="com.doge.entity.po.AppFeedback">
+		UPDATE app_feedback
+	<set>
+		<if test= "bean.userId!=null"> 
+				user_id = #{bean.userId},
+		</if>
+		<if test= "bean.nickName!=null"> 
+				nick_name = #{bean.nickName},
+		</if>
+		<if test= "bean.content!=null"> 
+				content = #{bean.content},
+		</if>
+		<if test= "bean.createTime!=null"> 
+				create_time = #{bean.createTime},
+		</if>
+		<if test= "bean.pFeedbackId!=null"> 
+				p_feedback_id = #{bean.pFeedbackId},
+		</if>
+		<if test= "bean.status!=null"> 
+				status = #{bean.status},
+		</if>
+		<if test= "bean.sendType!=null"> 
+				send_type = #{bean.sendType},
+		</if>
+		<if test= "bean.clientLastSendTime!=null"> 
+				client_last_send_time = #{bean.clientLastSendTime},
+		</if>
+	</set>
+			where feedback_id=#{feedbackId} and user_id=#{userId}
+	</update>
+
+	<!--根据FeedbackId And UserId删除-->
+	<delete id ="deleteByFeedbackId And UserId">
+		delete from app_feedback where feedback_id=#{feedbackId} and user_id=#{userId}
+	</delete>
+
+
+</mapper>

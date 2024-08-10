@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doge.mappers.AppCarouselMapper">
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.doge.entity.po.AppCarousel">
+	<!--自增ID-->
+	<id column="carousel_id" property="carouselId" />
+	<!--图片-->
+	<result column="img_path" property="imgPath" />
+	<!--0:分享1:问题 2:考题 3:外部连接-->
+	<result column="object_type" property="objectType" />
+	<!--文章ID-->
+	<result column="object_id" property="objectId" />
+	<!--外部连接-->
+	<result column="outer_link" property="outerLink" />
+	<!--排序-->
+	<result column="sort" property="sort" />
+	</resultMap>
+	<!--通用查询结果列-->
+	<sql id="base_column_list">
+			carousel_id,img_path,object_type,object_id,outer_link,sort
+	</sql>
+	<!--通用查询结果列-->
+	<sql id="base_query_condition">
+
+		<if test="query.carouselId!=null">
+			and carousel_id = #{query.carouselId}
+		</if>
+		<if test="query.imgPath!=null and query.imgPath!=''">
+			and img_path = #{query.imgPath}
+		</if>
+		<if test="query.objectType!=null">
+			and object_type = #{query.objectType}
+		</if>
+		<if test="query.objectId!=null and query.objectId!=''">
+			and object_id = #{query.objectId}
+		</if>
+		<if test="query.outerLink!=null and query.outerLink!=''">
+			and outer_link = #{query.outerLink}
+		</if>
+		<if test="query.sort!=null">
+			and sort = #{query.sort}
+		</if>	</sql>
+	<!--扩展查询条件-->
+	<sql id="base_query_condition_extends">
+
+		<if test="query.imgPathFuzzy!=null and query.imgPathFuzzy!='' ">
+			and img_path like concat('%', #{query.imgPathFuzzy}, '%')
+		</if>
+
+		<if test="query.objectIdFuzzy!=null and query.objectIdFuzzy!='' ">
+			and object_id like concat('%', #{query.objectIdFuzzy}, '%')
+		</if>
+
+		<if test="query.outerLinkFuzzy!=null and query.outerLinkFuzzy!='' ">
+			and outer_link like concat('%', #{query.outerLinkFuzzy}, '%')
+		</if>
+	</sql>
+	<!--通用查询条件-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_query_condition"/>
+			<include refid="base_query_condition_extends"/>
+		</where>
+	</sql>
+	<!--查询列表-->
+	<select id = "selectList" resultMap="base_result_map">
+		SELECT
+		<include refid="base_column_list"/>
+		FROM app_carousel
+		<include refid="query_condition"/>
+		<if test="query.orderBy!=null">order by ${query.orderBy}</if>
+		<if test="query.simplePage!=null">limit  #{query.simplePage.start},#{query.simplePage.end}</if>
+	</select>
+	<!--查询数量-->
+		<select id ="selectCount" resultType="java.lang.Integer">
+			SELECT count(1) FROM  app_carousel
+		<include refid="query_condition"/>
+		</select>
+	<!--插入（匹配有值的字段）-->
+		<insert id ="insert" parameterType="com.doge.entity.po.AppCarousel">
+			<selectKey keyProperty="bean.carouselId" resultType = "Integer" order="AFTER">
+				SELECT LAST_INSERT_ID()
+			</selectKey>
+				INSERT INTO  app_carousel
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.carouselId!=null"> 
+				carousel_id,
+			</if>
+			<if test= "bean.imgPath!=null"> 
+				img_path,
+			</if>
+			<if test= "bean.objectType!=null"> 
+				object_type,
+			</if>
+			<if test= "bean.objectId!=null"> 
+				object_id,
+			</if>
+			<if test= "bean.outerLink!=null"> 
+				outer_link,
+			</if>
+			<if test= "bean.sort!=null"> 
+				sort,
+			</if>
+		</trim>
+
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.carouselId!=null"> 
+				#{bean.carouselId},
+			</if>
+			<if test= "bean.imgPath!=null"> 
+				#{bean.imgPath},
+			</if>
+			<if test= "bean.objectType!=null"> 
+				#{bean.objectType},
+			</if>
+			<if test= "bean.objectId!=null"> 
+				#{bean.objectId},
+			</if>
+			<if test= "bean.outerLink!=null"> 
+				#{bean.outerLink},
+			</if>
+			<if test= "bean.sort!=null"> 
+				#{bean.sort},
+			</if>
+		</trim>
+		</insert>
+	<!--插入或者更新（匹配有值的字段）-->
+		<insert id ="insertOrUpdate" parameterType="com.doge.entity.po.AppCarousel">
+				INSERT INTO  app_carousel
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test= "bean.carouselId!=null"> 
+				carousel_id,
+			</if>
+			<if test= "bean.imgPath!=null"> 
+				img_path,
+			</if>
+			<if test= "bean.objectType!=null"> 
+				object_type,
+			</if>
+			<if test= "bean.objectId!=null"> 
+				object_id,
+			</if>
+			<if test= "bean.outerLink!=null"> 
+				outer_link,
+			</if>
+			<if test= "bean.sort!=null"> 
+				sort,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test= "bean.carouselId!=null"> 
+				#{bean.carouselId},
+			</if>
+			<if test= "bean.imgPath!=null"> 
+				#{bean.imgPath},
+			</if>
+			<if test= "bean.objectType!=null"> 
+				#{bean.objectType},
+			</if>
+			<if test= "bean.objectId!=null"> 
+				#{bean.objectId},
+			</if>
+			<if test= "bean.outerLink!=null"> 
+				#{bean.outerLink},
+			</if>
+			<if test= "bean.sort!=null"> 
+				#{bean.sort},
+			</if>
+		</trim>
+			on DUPLICATE key update
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test= "bean.imgPath!=null"> 
+				img_path = VALUES(img_path),
+			</if>
+			<if test= "bean.objectType!=null"> 
+				object_type = VALUES(object_type),
+			</if>
+			<if test= "bean.objectId!=null"> 
+				object_id = VALUES(object_id),
+			</if>
+			<if test= "bean.outerLink!=null"> 
+				outer_link = VALUES(outer_link),
+			</if>
+			<if test= "bean.sort!=null"> 
+				sort = VALUES(sort),
+			</if>
+		</trim>
+		</insert>
+	<!--批量插入-->
+		<insert id ="insertBatch" parameterType="com.doge.entity.po.AppCarousel">
+			INSERT INTO app_carousel(img_path,object_type,object_id,outer_link,sort)values
+			<foreach collection="list" item="item" separator=",">
+			(#{item.imgPath},#{item.objectType},#{item.objectId},#{item.outerLink},#{item.sort})
+			</foreach>
+		</insert>
+
+	<!--批量插入或更新-->
+		<insert id ="insertOrUpdateBatch" parameterType="com.doge.entity.po.AppCarousel">
+			INSERT INTO app_carousel(img_path,object_type,object_id,outer_link,sort)values
+			<foreach collection="list" item="item" separator="," >
+			(#{item.imgPath},#{item.objectType},#{item.objectId},#{item.outerLink},#{item.sort})
+			</foreach>
+			on DUPLICATE key update
+			img_path = VALUES(img_path),
+			object_type = VALUES(object_type),
+			object_id = VALUES(object_id),
+			outer_link = VALUES(outer_link),
+			sort = VALUES(sort)
+
+		</insert>
+
+	<!--根据CarouselId查询-->
+	<select id = "selectByCarouselId" resultMap="base_result_map">
+		select <include refid="base_column_list"/> from app_carousel  where carousel_id=#{carouselId}
+	</select>
+	<!--根据CarouselId更新-->
+	<update id ="updateByCarouselId" parameterType="com.doge.entity.po.AppCarousel">
+		UPDATE app_carousel
+	<set>
+		<if test= "bean.imgPath!=null"> 
+				img_path = #{bean.imgPath},
+		</if>
+		<if test= "bean.objectType!=null"> 
+				object_type = #{bean.objectType},
+		</if>
+		<if test= "bean.objectId!=null"> 
+				object_id = #{bean.objectId},
+		</if>
+		<if test= "bean.outerLink!=null"> 
+				outer_link = #{bean.outerLink},
+		</if>
+		<if test= "bean.sort!=null"> 
+				sort = #{bean.sort},
+		</if>
+	</set>
+			where carousel_id=#{carouselId}
+	</update>
+
+	<!--根据CarouselId删除-->
+	<delete id ="deleteByCarouselId">
+		delete from app_carousel where carousel_id=#{carouselId}
+	</delete>
+
+
+</mapper>
