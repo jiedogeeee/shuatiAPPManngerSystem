@@ -772,8 +772,8 @@ CREATE TABLE `sys_account`  (
 -- ----------------------------
 -- Records of sys_account
 -- ----------------------------
-INSERT INTO `sys_account` VALUES (1000000, '18688886666', '程序员老罗', '93a9e5bb1d598a453606e890f72bd393', '程序员', 1, '1000', '2023-07-02 15:43:37');
-INSERT INTO `sys_account` VALUES (1000001, '18666666666', '老罗铁粉', '47ec2dd791e31e2ef2076caf64ed9b3d', '程序员', 1, '1001', '2023-07-25 08:56:41');
+INSERT INTO `sys_account` VALUES (1000000, '18688886666', 'lisa', '93a9e5bb1d598a453606e890f72bd393', '程序员', 1, '1000', '2023-07-02 15:43:37');
+INSERT INTO `sys_account` VALUES (1000001, '18666666666', '老罗', '47ec2dd791e31e2ef2076caf64ed9b3d', '程序员', 1, '1001', '2023-07-25 08:56:41');
 INSERT INTO `sys_account` VALUES (1000002, '19999999999', '超级管理员', '47ec2dd791e31e2ef2076caf64ed9b3d', NULL, 1, '1000', '2024-01-11 22:14:27');
 INSERT INTO `sys_account` VALUES (1000003, '15944445556', '张三', 'df10ef8509dc176d733d59549e7dbfaf', '程序员', 1, '1000', '2024-05-24 00:00:49');
 INSERT INTO `sys_account` VALUES (1000005, '15977778888', '李四', 'df10ef8509dc176d733d59549e7dbfaf', '程序员', 1, '1021', '2024-08-08 14:59:01');
